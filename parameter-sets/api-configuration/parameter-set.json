@@ -1,0 +1,65 @@
+{
+    "meta": {
+        "label": "API configuration",
+        "description": "Define presets for users to call the API with specific credentials, quota and parallelization parameters",
+        "icon": "icon-cloud"
+    },
+    "defaultDefinableAtProjectLevel": true,
+    "defaultDefinableInline": false,
+    "definableInline": false,
+    "params": [
+        {
+            "name": "separator_authentification",
+            "label": "Authentification",
+            "type": "SEPARATOR",
+            "description": "Please refer to the documentation: https://rapidapi.com/OpenedAI/api/gpt-text-generation/"
+        },
+        {
+            "name": "rapidapi_key",
+            "label": "RapidAPI key",
+            "description": "RapidAPI Key as a string.",
+            "type": "PASSWORD",
+            "mandatory": true
+        },
+        {
+            "name": "separator_performance",
+            "label": "Parallelization",
+            "type": "SEPARATOR"
+        },
+        {
+            "name": "parallel_workers",
+            "label": "Concurrency",
+            "description": "Number of threads calling the API in parallel (max 100). Increase to speed-up computation.",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue": 1,
+            "minI": 1,
+            "maxI": 4
+        },
+        {
+            "name": "separator_api_quota",
+            "label": "Attempts",
+            "type": "SEPARATOR"
+        },
+        {
+            "name": "max_attempts",
+            "label": "Maximum Attempts",
+            "description": "Maximum number of retry attempts when an API request fails.",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue": 3,
+            "minI": 1,
+            "maxI": 100
+        },
+        {
+            "name": "wait_interval",
+            "label": "Waiting Interval",
+            "description": "Seconds to wait between reattempting in case of failure.",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue": 30,
+            "minI": 30,
+            "maxI": 60
+        }
+    ]
+}

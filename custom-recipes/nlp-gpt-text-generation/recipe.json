@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "label": "OpenedAI GPT",
+    "displayOrderRank": 1,
+    "description": "Generate text with GPT",
+    "icon": "icon-cloud"
+  },
+  "kind": "PYTHON",
+  "selectableFromDataset": "input_dataset",
+  "inputRoles": [
+    {
+      "name": "input_dataset",
+      "label": "Input Dataset",
+      "description": "Dataset to be used for API",
+      "arity": "UNARY",
+      "required": true,
+      "acceptsDataset": true
+    }
+  ],
+  "outputRoles": [
+    {
+      "name": "output_dataset",
+      "label": "Output dataset",
+      "description": "Dataset with API output",
+      "arity": "UNARY",
+      "required": true,
+      "acceptsDataset": true
+    }
+  ],
+  "params": [
+    {
+      "name": "separator_input",
+      "label": "Input parameters",
+      "type": "SEPARATOR"
+    },
+    {
+      "name": "text_column",
+      "label": "Text column",
+      "type": "COLUMN",
+      "columnRole": "input_dataset",
+      "mandatory": true,
+      "allowedColumnTypes": [
+        "string"
+      ]
+    },
+    {
+      "name": "task",
+      "label": "Task",
+      "description": "Task to perform, e.g. Correct grammar mistakes.",
+      "type": "STRING",
+      "mandatory": false
+    },
+    {
+      "name": "input_desc",
+      "label": "Input Description",
+      "description": "Description of input column in singular, e.g. Original Text",
+      "type": "STRING",
+      "mandatory": false
+    },
+    {
+      "name": "output_desc",
+      "label": "Output Description",
+      "description": "Description of output column in singular, e.g. Standard American English",
+      "type": "STRING",
+      "mandatory": false
+    },
+    {
+      "name": "example_in",
+      "label": "Example Input",
+      "description": "Example input, e.g. She no went to the market.",
+      "type": "STRING",
+      "mandatory": false
+    },
+    {
+      "name": "example_out",
+      "label": "Example Output",
+      "description": "Example output, e.g. She didn't go to the market.",
+      "type": "STRING",
+      "mandatory": false
+    },
+    {
+      "name": "temperature",
+      "label": "Temperature",
+      "description": "Temperature of the Generation - The higher the more imaginative.",
+      "type": "DOUBLE",
+      "defaultValue": 0.8,
+      "mandatory": false
+    },
+    {
+      "name": "separator_configuration",
+      "label": "Configuration",
+      "type": "SEPARATOR"
+    },
+    {
+      "name": "api_configuration_preset",
+      "label": "API configuration preset",
+      "type": "PRESET",
+      "parameterSetId": "api-configuration",
+      "mandatory": true
+    },
+    {
+      "name": "fail_on_error",
+      "label": "Fail on error",
+      "type": "BOOLEAN",
+      "description": "Abort execution if any issues are raised. By default, errors will be logged per record in the output.",
+      "defaultValue": false,
+      "mandatory": true
+    }
+  ],
+  "resourceKeys": []
+}

@@ -1,0 +1,19 @@
+{
+    "id": "nlp-openedai-gpt",
+    "version": "1.0.0",
+    "meta": {
+        "label": "GPT Text Generation",
+        "category": "Natural Language Processing",
+        "description": "Use the GPT model to generate text",
+        "author": "OpenedAI",
+        "icon": "icon-cloud",
+        "licenseInfo": "Apache Software License",
+        "supportLevel": "NOT_SUPPORTED",
+        "url": "",
+        "tags": [
+            "DeepL",
+            "Cloud",
+            "NLP"
+        ]
+    }
+}
