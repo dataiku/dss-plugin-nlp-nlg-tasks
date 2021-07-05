@@ -1,4 +1,4 @@
-# DeepL Translation Plugin
+# OpenedAI GPT Generation Plugin
 
 ![Build status](https://github.com/openedai/dss-plugin-openedai-gpt/actions/workflows/auto-make.yml/badge.svg) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/dataiku/dss-plugin-openedai-gpt?logo=github) ![Support level](https://img.shields.io/badge/support-Unsupported-orange)
 
