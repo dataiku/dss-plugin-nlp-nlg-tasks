@@ -1,17 +1,17 @@
 {
-    "id": "nlp-openedai-gpt",
+    "id": "nlp-gpt-tasks",
     "version": "1.0.0",
     "meta": {
-        "label": "GPT Text Generation",
+        "label": "GPT-3 NLP Tasks",
         "category": "Natural Language Processing",
-        "description": "Use the GPT model to generate text",
-        "author": "OpenedAI",
-        "icon": "icon-cloud",
+        "description": "Use GPT-3 to complete natural language tasks",
+        "author": "Niklas MUENNIGHOFF",
+        "icon": "icon-magic",
         "licenseInfo": "Apache Software License",
         "supportLevel": "NOT_SUPPORTED",
         "url": "",
         "tags": [
-            "DeepL",
+            "API",
             "Cloud",
             "NLP"
         ]

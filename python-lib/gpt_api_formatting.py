@@ -64,22 +64,32 @@ class GPTAPIFormatter(GenericAPIFormatter):
     def __init__(
         self,
         input_df: pd.DataFrame,
-        input_column: AnyStr,
-        column_prefix: AnyStr = "gpt_api",
+        input_column: AnyStr = "",
+        output_column: AnyStr = "generation",
+        column_prefix: AnyStr = "gpt",
+        output_mode: bool = False,
         error_handling: ErrorHandlingEnum = ErrorHandlingEnum.LOG,
     ):
         super().__init__(input_df, column_prefix, error_handling)
-        self.generated_text_column_name = generate_unique(
-            f"{input_column}_generation", input_df.columns, prefix=None
-        )
+
+        if output_mode:
+            self.generated_text_column_name = output_column
+        else:
+            self.generated_text_column_name = generate_unique(
+                f"{output_column}", input_df.columns, prefix=None
+            )
+        self.output_mode = output_mode
         self.input_column = input_column
         self.input_df_columns = input_df.columns
         self._compute_column_description()
 
     def _compute_column_description(self):
-        self.column_description_dict[
-            self.generated_text_column_name
-        ] = f"Generated text based on the '{self.input_column}' column by OpenedAI GPT."
+        if self.output_mode:
+            self.column_description_dict[self.generated_text_column_name] = "Generated text."
+        else:
+            self.column_description_dict[
+                self.generated_text_column_name
+            ] = f"Generation based on '{self.input_column}' column."
 
     def format_row(self, row: Dict) -> Dict:
         """
@@ -93,5 +103,6 @@ class GPTAPIFormatter(GenericAPIFormatter):
         """
         raw_response = row[self.api_column_names.response]
         response = safe_json_loads(raw_response, self.error_handling)
+        # Only take the first line
         row[self.generated_text_column_name] = response.get("generation", "").split("\n")[0]
         return row

@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "label": "GPT-3 NLP Tasks",
+    "displayOrderRank": 1,
+    "description": "Use GPT-3 to complete natural language tasks",
+    "icon": "icon-magic"
+  },
+  "kind": "PYTHON",
+  "selectableFromDataset": "input_dataset",
+  "inputRoles": [
+    {
+      "name": "input_dataset",
+      "label": "Input Dataset",
+      "description": "Optional dataset with text column to use",
+      "arity": "UNARY",
+      "required": false,
+      "acceptsDataset": true
+    }
+  ],
+  "outputRoles": [
+    {
+      "name": "output_dataset",
+      "label": "Output dataset",
+      "description": "Dataset with API output",
+      "arity": "UNARY",
+      "required": true,
+      "acceptsDataset": true
+    }
+  ],
+  "params": [
+    {
+      "name": "separator_input",
+      "label": "Input parameters",
+      "type": "SEPARATOR"
+    },
+    {
+      "name": "task",
+      "label": "Task",
+      "description": "Task to perform, e.g. Correct grammar mistakes.",
+      "type": "STRING",
+      "mandatory": true
+    },
+    {
+      "name": "output_mode",
+      "label": "Output-only mode",
+      "description": "Generate text output only without input.",
+      "type": "BOOLEAN",
+      "mandatory": true,
+      "defaultValue": false
+    },
+    {
+      "name": "text_column",
+      "label": "Input text column",
+      "description": "Input text column to transform.",
+      "type": "COLUMN",
+      "columnRole": "input_dataset",
+      "mandatory": false,
+      "allowedColumnTypes": [
+        "string"
+      ],
+      "visibilityCondition": "model.output_mode==false"
+    },
+    {
+      "name": "input_desc",
+      "label": "Input Description",
+      "description": "Description of input column if present in singular, e.g. Original Text",
+      "type": "STRING",
+      "mandatory": false,
+      "visibilityCondition": "model.output_mode==false"
+    },
+    {
+      "name": "output_desc",
+      "label": "Output Description",
+      "description": "Description of output column in singular, e.g. Standard American English",
+      "type": "STRING",
+      "mandatory": true
+    },
+    {
+      "name": "examples",
+      "type": "MAP",
+      "label": "Fewshot Examples",
+      "description": "Input example ⟶ Desired output (Remove the default and provide 1-10 examples, the more the better)",
+      "mandatory": false,
+      "defaultValue": {
+        "She no went to the market.": "She didn't go to the market"
+      },
+      "visibilityCondition": "model.output_mode==false"
+    },
+    {
+      "name": "num_outputs",
+      "type": "INT",
+      "label": "Output Rows",
+      "description": "Rows of outputs to generate",
+      "mandatory": false,
+      "defaultValue": 10,
+      "visibilityCondition": "model.output_mode"
+    },
+    {
+      "name": "output_examples",
+      "type": "STRINGS",
+      "label": "Output Examples",
+      "description": "1-10 examples of what kind of output to generate",
+      "mandatory": false,
+      "visibilityCondition": "model.output_mode"
+    },
+    {
+      "name": "temperature",
+      "label": "Temperature",
+      "description": "Temperature of the Generation - The higher the more imaginative",
+      "type": "DOUBLE",
+      "defaultValue": 0.8,
+      "mandatory": false
+    },
+    {
+      "name": "separator_configuration",
+      "label": "Configuration",
+      "type": "SEPARATOR"
+    },
+    {
+      "name": "api_configuration_preset",
+      "label": "API configuration preset",
+      "type": "PRESET",
+      "parameterSetId": "api-configuration",
+      "mandatory": true
+    },
+    {
+      "name": "fail_on_error",
+      "label": "Fail on error",
+      "type": "BOOLEAN",
+      "description": "Abort execution if any issues are raised. By default, errors will be logged per record in the output.",
+      "defaultValue": false,
+      "mandatory": true
+    }
+  ],
+  "resourceKeys": []
+}

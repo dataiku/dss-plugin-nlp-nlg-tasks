@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
-"""Module with utility functions to call the GPT translation API"""
+"""Module with client calling the GPT endpoint"""
 
 import json
+from typing import List
+from typing import Tuple
 
 import requests
+from requests.models import Response
+import openai
 
 # ==============================================================================
 # CONSTANT DEFINITION
 # ==============================================================================
 
 API_EXCEPTIONS = (requests.HTTPError,)
+OPENEDAI_URL = "https://gpt-text-generation.p.rapidapi.com/completions"
+OPENEDAI_HOST = "gpt-text-generation.p.rapidapi.com"
 
 # ==============================================================================
 # CLASS AND FUNCTION DEFINITION
@@ -17,12 +23,18 @@ API_EXCEPTIONS = (requests.HTTPError,)
 
 
 class GPTClient:
-    def __init__(self, api_key) -> None:
+    def __init__(self, engine, api_key) -> None:
+        self.engine = engine
         self.api_key = api_key
-        self.url = "https://gpt-text-generation.p.rapidapi.com/complete"
-        self.host = "gpt-text-generation.p.rapidapi.com"
 
-    def format_prompt(self, text, task, input_desc, output_desc, example_in=None, example_out=None):
+    def format_prompt(
+        self,
+        task: str = "",
+        text: str = "",
+        input_desc: str = "",
+        output_desc: str = "",
+        examples: List[Tuple[str, str]] = [("", "")],
+    ) -> str:
         """
         Returns prompt of form:
 
@@ -42,48 +54,80 @@ class GPTClient:
         Returns:
             prompt: Formatted prompt
         """
-        ### Preprocess
-        text = text.replace("\n", "")
 
-        ### Put all together
-        task_prompt = f"{task}\n\n"
+        prompt = ""
 
-        if example_in:
-            example_prompt = f"{input_desc}: {example_in}\n{output_desc}: {example_out}\n\n"
-        else:
-            example_prompt = ""
+        ### Task ###
+        if task:
+            prompt += f"{task}\n\n"
 
-        final_prompt = f"{input_desc}: {text}\n{output_desc}:"
+        ### Examples ###
+        for ex_inp, ex_out in examples:
+            if ex_inp:
+                if input_desc:
+                    prompt += f"{input_desc}: "
+                prompt += f"{ex_inp}\n"
 
-        full_prompt = task_prompt + example_prompt + final_prompt
+            # One could also provide examples without descriptions, e.g.
+            # elephant
+            # giraffe
+            # cat
+            if ex_out:
+                if output_desc:
+                    prompt += f"{output_desc}: "
+                prompt += f"{ex_out}\n"
 
-        return full_prompt
+        ### Final prompt ###
+        if text:
+            if input_desc:
+                prompt += f"{input_desc}: "
+            prompt += f"{text}\n"
+
+        if output_desc:
+            prompt += f"{output_desc}:"
+
+        return prompt
 
     def generate(
         self,
-        text,
-        task,
-        input_desc,
-        output_desc,
-        example_in=None,
-        example_out=None,
-        temperature=0.8,
-    ):
+        task: str = "",
+        text: str = "",
+        input_desc: str = "",
+        output_desc: str = "",
+        examples: List[Tuple[str, str]] = [("", "")],
+        temperature: float = 0.8,
+    ) -> str:
         """
         Generates Text.
         """
+        prompt = self.format_prompt(task, text, input_desc, output_desc, examples)
 
-        prompt = self.format_prompt(text, task, input_desc, output_desc, example_in, example_out)
+        if self.engine == "openedai":
+            response = self.request_openedai(prompt, temperature)
+        else:
+            response = self.request_openai(prompt, temperature)
+
+        return response
+
+    def request_openai(self, prompt, temperature):
+
+        response = openai.Completion.create(
+            model=self.engine, prompt=prompt, stop="\n", temperature=temperature, max_tokens=100
+        )
+
+        return response
+
+    def request_openedai(self, prompt, temperature):
 
         print("Sending prompt:")
         print(prompt)
         response = requests.post(
-            url=self.url,
+            url=OPENEDAI_URL,
             data=json.dumps({"prompt": prompt, "temperature": temperature}),
             headers={
                 "content-type": "application/json",
                 "x-rapidapi-key": self.api_key,
-                "x-rapidapi-host": self.host,
+                "x-rapidapi-host": OPENEDAI_HOST,
             },
         )
         if "generation" in response.text:
@@ -92,7 +136,7 @@ class GPTClient:
         else:
             # Extract & send error related information
             user_message = (
-                "Encountered the following error while sending an API request:"
+                "Encountered the following error while sending an API request to OpenedAI:"
                 + f" Error Code: {response.status_code}"
                 + f" Error message: {response.text}"
             )
