@@ -26,6 +26,8 @@ class GPTClient:
     def __init__(self, engine, api_key) -> None:
         self.engine = engine
         self.api_key = api_key
+        if engine != "openedai":
+            openai.api_key = self.api_key
 
     def format_prompt(
         self,
@@ -112,10 +114,18 @@ class GPTClient:
     def request_openai(self, prompt, temperature):
 
         response = openai.Completion.create(
-            model=self.engine, prompt=prompt, stop="\n", temperature=temperature, max_tokens=100
+            engine=self.engine, prompt=prompt, stop="\n", temperature=temperature, max_tokens=100
         )
 
-        return response
+        if "choices" in response:
+            return response["choices"][0]
+        else:
+            # Extract & send error related information
+            user_message = (
+                "Encountered the following error while sending an API request to OpenAI:"
+                + f"{response}"
+            )
+            raise requests.HTTPError(user_message)
 
     def request_openedai(self, prompt, temperature):
 
@@ -140,5 +150,4 @@ class GPTClient:
                 + f" Error Code: {response.status_code}"
                 + f" Error message: {response.text}"
             )
-
             raise requests.HTTPError(user_message)

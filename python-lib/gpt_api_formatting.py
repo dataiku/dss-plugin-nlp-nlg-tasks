@@ -67,6 +67,7 @@ class GPTAPIFormatter(GenericAPIFormatter):
         input_column: AnyStr = "",
         output_column: AnyStr = "generation",
         column_prefix: AnyStr = "gpt",
+        response_column: AnyStr = "generation",
         output_mode: bool = False,
         error_handling: ErrorHandlingEnum = ErrorHandlingEnum.LOG,
     ):
@@ -81,6 +82,7 @@ class GPTAPIFormatter(GenericAPIFormatter):
         self.output_mode = output_mode
         self.input_column = input_column
         self.input_df_columns = input_df.columns
+        self.response_column = response_column
         self._compute_column_description()
 
     def _compute_column_description(self):
@@ -104,5 +106,5 @@ class GPTAPIFormatter(GenericAPIFormatter):
         raw_response = row[self.api_column_names.response]
         response = safe_json_loads(raw_response, self.error_handling)
         # Only take the first line
-        row[self.generated_text_column_name] = response.get("generation", "").split("\n")[0]
+        row[self.generated_text_column_name] = response.get(self.response_column, "").split("\n")[0]
         return row
