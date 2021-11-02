@@ -66,7 +66,7 @@ error_handling = (
 client = GPTClient(api_configuration_preset.get("engine"), api_configuration_preset.get("api_key"))
 max_attempts = api_configuration_preset.get("max_attempts")
 wait_interval = api_configuration_preset.get("wait_interval")
-if client == "openedai":
+if api_configuration_preset.get("engine") == "openedai":
     response_column = "generation"
 else:
     response_column = "text"
