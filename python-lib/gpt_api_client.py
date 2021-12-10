@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
-"""Module with client calling the GPT endpoint"""
+"""Module with client calling the OpenAI GPT completion endpoint"""
 
-import json
 from typing import List
 from typing import Tuple
 
-import requests
-from requests.models import Response
 import openai
+import requests
 
 # ==============================================================================
 # CONSTANT DEFINITION
 # ==============================================================================
 
 API_EXCEPTIONS = (requests.HTTPError,)
-OPENEDAI_URL = "https://gpt-text-generation.p.rapidapi.com/completions"
-OPENEDAI_HOST = "gpt-text-generation.p.rapidapi.com"
 
 # ==============================================================================
 # CLASS AND FUNCTION DEFINITION
@@ -25,9 +21,7 @@ OPENEDAI_HOST = "gpt-text-generation.p.rapidapi.com"
 class GPTClient:
     def __init__(self, engine, api_key) -> None:
         self.engine = engine
-        self.api_key = api_key
-        if engine != "openedai":
-            openai.api_key = self.api_key
+        openai.api_key = api_key
 
     def format_prompt(
         self,
@@ -49,9 +43,10 @@ class GPTClient:
 
         Args:
             task: The task for GPT, e.g. Correct grammar mistakes.
+            text: The current row based on which to generate
             input_desc: Description of input column
             output_desc: Description of output column
-            example_in: Example of an input text
+            example_in: Example of input text
             example_out: Example of desired output text
         Returns:
             prompt: Formatted prompt
@@ -70,7 +65,7 @@ class GPTClient:
                     prompt += f"{input_desc}: "
                 prompt += f"{ex_inp}\n"
 
-            # One could also provide examples without descriptions, e.g.
+            # One could also provide output examples without descriptions, e.g.
             # elephant
             # giraffe
             # cat
@@ -86,6 +81,7 @@ class GPTClient:
             prompt += f"{text}\n"
 
         if output_desc:
+            # Do not end with a space, as it worsens generation
             prompt += f"{output_desc}:"
 
         return prompt
@@ -97,57 +93,26 @@ class GPTClient:
         input_desc: str = "",
         output_desc: str = "",
         examples: List[Tuple[str, str]] = [("", "")],
-        temperature: float = 0.8,
+        temperature: float = 0.7,
+        max_tokens: int = 64,
     ) -> str:
         """
-        Generates Text.
+        Constructs a prompt and makes an API call to generate text.
+        Default values for temperature and max_tokens are chosen based on the OpenAI playground.
         """
         prompt = self.format_prompt(task, text, input_desc, output_desc, examples)
 
-        if self.engine == "openedai":
-            response = self.request_openedai(prompt, temperature)
-        else:
-            response = self.request_openai(prompt, temperature)
-
-        return response
-
-    def request_openai(self, prompt, temperature):
-
         response = openai.Completion.create(
-            engine=self.engine, prompt=prompt, stop="\n", temperature=temperature, max_tokens=100
+            engine=self.engine,
+            prompt=prompt,
+            stop="\n",
+            temperature=temperature,
+            max_tokens=max_tokens,
         )
 
         if "choices" in response:
             return response["choices"][0]
         else:
-            # Extract & send error related information
-            user_message = (
-                "Encountered the following error while sending an API request to OpenAI:"
-                + f"{response}"
-            )
-            raise requests.HTTPError(user_message)
-
-    def request_openedai(self, prompt, temperature):
-
-        print("Sending prompt:")
-        print(prompt)
-        response = requests.post(
-            url=OPENEDAI_URL,
-            data=json.dumps({"prompt": prompt, "temperature": temperature}),
-            headers={
-                "content-type": "application/json",
-                "x-rapidapi-key": self.api_key,
-                "x-rapidapi-host": OPENEDAI_HOST,
-            },
-        )
-        if "generation" in response.text:
-            # Returns text from the response object which is a json string, so no need to dump it into json anymore
-            return response.text
-        else:
-            # Extract & send error related information
-            user_message = (
-                "Encountered the following error while sending an API request to OpenedAI:"
-                + f" Error Code: {response.status_code}"
-                + f" Error message: {response.text}"
-            )
+            # OpenAIs Python client seems to handle all exceptions so this should rarely be called
+            user_message = f"Encountered the following error while sending an API request to OpenAI: {response}"
             raise requests.HTTPError(user_message)

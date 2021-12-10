@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Module with classes to format results from the DeepL Translation API"""
+"""Module with classes to format results from the OpenAI GPT completion endpoint"""
 
 import logging
 from typing import AnyStr
 from typing import Dict
 
 import pandas as pd
-
 from plugin_io_utils import (
     API_COLUMN_NAMES_DESCRIPTION_DICT,
     ErrorHandlingEnum,
@@ -57,8 +56,8 @@ class GenericAPIFormatter:
 
 class GPTAPIFormatter(GenericAPIFormatter):
     """
-    Formatter class for GPT API responses for the OpenedAI GPT API.
-    Make sure the response is a valid JSON.
+    Formatter class for GPT API responses.
+    Response has to be a valid JSON.
     """
 
     def __init__(
@@ -67,7 +66,7 @@ class GPTAPIFormatter(GenericAPIFormatter):
         input_column: AnyStr = "",
         output_column: AnyStr = "generation",
         column_prefix: AnyStr = "gpt",
-        response_column: AnyStr = "generation",
+        response_column: AnyStr = "text",
         output_mode: bool = False,
         error_handling: ErrorHandlingEnum = ErrorHandlingEnum.LOG,
     ):
@@ -77,7 +76,7 @@ class GPTAPIFormatter(GenericAPIFormatter):
             self.generated_text_column_name = output_column
         else:
             self.generated_text_column_name = generate_unique(
-                f"{output_column}", input_df.columns, prefix=None
+                output_column, input_df.columns, prefix=None
             )
         self.output_mode = output_mode
         self.input_column = input_column
@@ -87,11 +86,11 @@ class GPTAPIFormatter(GenericAPIFormatter):
 
     def _compute_column_description(self):
         if self.output_mode:
-            self.column_description_dict[self.generated_text_column_name] = "Generated text."
+            self.column_description_dict[self.generated_text_column_name] = "Generated text"
         else:
             self.column_description_dict[
                 self.generated_text_column_name
-            ] = f"Generation based on '{self.input_column}' column."
+            ] = f'Generation based on "{self.input_column}" column'
 
     def format_row(self, row: Dict) -> Dict:
         """
@@ -99,12 +98,10 @@ class GPTAPIFormatter(GenericAPIFormatter):
 
         Args:
             row: Dict of a single dataframe row with a column corresponding to the response.
-
         Returns:
             row: Dict of a single formatted dataframe row
         """
         raw_response = row[self.api_column_names.response]
         response = safe_json_loads(raw_response, self.error_handling)
-        # Only take the first line
-        row[self.generated_text_column_name] = response.get(self.response_column, "").split("\n")[0]
+        row[self.generated_text_column_name] = response.get(self.response_column, "")
         return row

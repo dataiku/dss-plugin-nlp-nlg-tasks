@@ -23,31 +23,30 @@ from retry import retry
 # SETUP
 # ==============================================================================
 
-api_configuration_preset = get_recipe_config().get("api_configuration_preset")
+recipe_config = get_recipe_config()
+
+api_configuration_preset = recipe_config.get("api_configuration_preset")
 if api_configuration_preset is None or api_configuration_preset == {}:
     raise ValueError("Please specify an API configuration preset")
 
-# Recipe parameters
-# If there is not input dataset
-output_mode = get_recipe_config().get("output_mode", False)
+output_mode = recipe_config.get("output_mode", False)
 if output_mode:
-    examples = get_recipe_config().get("output_examples", "")
+    examples = recipe_config.get("output_examples", "")
     examples = [("", v) for v in examples]
     # Explicity set to empty strings as DSS may cache previous settings
     input_desc = ""
     text_column = ""
 else:
-    examples = get_recipe_config().get("examples")
+    examples = recipe_config.get("examples")
     examples = [(k, v) for k, v in examples.items()]
-    input_desc = get_recipe_config().get("input_desc", "")
-    text_column = get_recipe_config().get("text_column")
+    input_desc = recipe_config.get("input_desc", "")
+    # If none specificed, will trigger <class 'ValueError'>: You must specify a valid column name
+    text_column = recipe_config.get("text_column")
 
-
-print("EXAMPLES:", examples)
-
-task = get_recipe_config().get("task", "")
-output_desc = get_recipe_config().get("output_desc", "")
-temperature = get_recipe_config().get("temperature", 0.8)
+task = recipe_config.get("task", "")
+output_desc = recipe_config.get("output_desc", "")
+temperature = recipe_config.get("temperature", 0.7)
+max_tokens = recipe_config.get("max_tokens", 64)
 
 # Create a fitting name for the output column
 if output_desc:
@@ -66,24 +65,23 @@ error_handling = (
 client = GPTClient(api_configuration_preset.get("engine"), api_configuration_preset.get("api_key"))
 max_attempts = api_configuration_preset.get("max_attempts")
 wait_interval = api_configuration_preset.get("wait_interval")
-if api_configuration_preset.get("engine") == "openedai":
-    response_column = "generation"
-else:
-    response_column = "text"
 
 
 # ==============================================================================
 # DEFINITIONS
 # ==============================================================================
 
-if get_recipe_config().get("output_mode"):
-    # Simulate an empty input dataframe if none is specified
+if output_mode:
     input_dataset = None
-    input_df = pd.DataFrame(
-        [""] * get_recipe_config().get("num_outputs"), columns=[output_column_name]
-    )
+    # Simulate an empty input dataframe if none is specified
+    input_df = pd.DataFrame([""] * recipe_config.get("num_outputs"), columns=[output_column_name])
 else:
-    input_dataset = dataiku.Dataset(get_input_names_for_role("input_dataset")[0])
+    input_dataset_names = get_input_names_for_role("input_dataset")
+    if not input_dataset_names:
+        raise ValueError(
+            "Cannot find input dataset. Use Output-only mode to generate without input dataset."
+        )
+    input_dataset = dataiku.Dataset(input_dataset_names[0])
     validate_column_input(text_column, [col["name"] for col in input_dataset.read_schema()])
     input_df = input_dataset.get_dataframe()
 
@@ -98,7 +96,8 @@ def call_gpt_api(
     input_desc: str = "",
     output_desc: str = "",
     examples: List[Tuple[str, str]] = [("", "")],
-    temperature: float = 0.8,
+    temperature: float = 0.7,
+    max_tokens: int = 64,
 ) -> str:
     """
     Calls GPT Text Generation API.
@@ -108,6 +107,7 @@ def call_gpt_api(
     else:
         text = ""
 
+    # Recipe UI will show an error when selecting a non-string input column
     if not isinstance(text, str):
         return json.dumps({})
     else:
@@ -118,6 +118,7 @@ def call_gpt_api(
             output_desc=output_desc,
             examples=examples,
             temperature=temperature,
+            max_tokens=max_tokens,
         )
         return response
 
@@ -129,7 +130,6 @@ formatter = GPTAPIFormatter(
     column_prefix=column_prefix,
     output_mode=output_mode,
     error_handling=error_handling,
-    response_column=response_column,
 )
 
 # ==============================================================================
@@ -141,7 +141,6 @@ df_parallelizer = DataFrameParallelizer(
     error_handling=error_handling,
     exceptions_to_catch=API_EXCEPTIONS,
     parallel_workers=parallel_workers,
-    batch_size=1,
     output_column_prefix=column_prefix,
 )
 
@@ -153,6 +152,7 @@ df = df_parallelizer.run(
     output_desc=output_desc,
     examples=examples,
     temperature=temperature,
+    max_tokens=max_tokens,
 )
 
 output_df = formatter.format_df(df)

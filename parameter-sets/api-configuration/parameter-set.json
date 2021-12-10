@@ -12,12 +12,12 @@
             "name": "separator_authentification",
             "label": "Authentification",
             "type": "SEPARATOR",
-            "description": "Refer to the documentation: https://openai.com/blog/openai-api/ or https://rapidapi.com/OpenedAI/api/gpt-text-generation/"
+            "description": "Refer to the documentation: https://beta.openai.com/docs/engines"
         },
         {
             "name": "engine",
             "label": "GPT Model",
-            "description": "Select the GPT model you want to use.",
+            "description": "Select the GPT model you want to use",
             "type": "SELECT",
             "mandatory": true,
             "selectChoices": [
@@ -36,17 +36,13 @@
                 {
                     "label": "OpenAI - Ada",
                     "value": "ada"
-                },
-                {
-                    "label": "OpenedAI (RapidAPI) - GPT",
-                    "value": "openedai"
                 }
             ]
         },
         {
             "name": "api_key",
             "label": "API Key",
-            "description": "API Key as a string.",
+            "description": "OpenAI API Key as a string",
             "type": "PASSWORD",
             "mandatory": true
         },
@@ -58,12 +54,12 @@
         {
             "name": "parallel_workers",
             "label": "Concurrency",
-            "description": "Number of threads calling the API in parallel (max 4). Increase to speed-up computation.",
+            "description": "Number of threads calling the API in parallel (max 100). Increase to speed-up computation.",
             "type": "INT",
             "mandatory": true,
-            "defaultValue": 1,
+            "defaultValue": 4,
             "minI": 1,
-            "maxI": 4
+            "maxI": 100
         },
         {
             "name": "separator_api_quota",
@@ -73,7 +69,7 @@
         {
             "name": "max_attempts",
             "label": "Maximum Attempts",
-            "description": "Maximum number of retry attempts when an API request fails.",
+            "description": "Maximum number of retry attempts when an API request fails",
             "type": "INT",
             "mandatory": true,
             "defaultValue": 3,
@@ -83,11 +79,11 @@
         {
             "name": "wait_interval",
             "label": "Waiting Interval",
-            "description": "Seconds to wait between reattempting in case of failure.",
+            "description": "Seconds to wait between reattempting in case of failure",
             "type": "INT",
             "mandatory": true,
-            "defaultValue": 30,
-            "minI": 30,
+            "defaultValue": 5,
+            "minI": 1,
             "maxI": 60
         }
     ]

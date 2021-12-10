@@ -40,18 +40,20 @@ class ErrorHandlingEnum(Enum):
 # ==============================================================================
 
 
-def generate_unique(name: AnyStr, existing_names: List, prefix: AnyStr = COLUMN_PREFIX) -> AnyStr:
+def generate_unique(name: AnyStr, existing_names: List, prefix: AnyStr = None) -> AnyStr:
     """
     Generate a unique name among existing ones by suffixing a number. Can also add an optional prefix.
     """
     if prefix is not None:
-        new_name = prefix + "_" + name
+        base_name = prefix + "_" + name
     else:
-        new_name = name
+        base_name = name
+
+    new_name = base_name
     for j in range(1, 1001):
         if new_name not in existing_names:
             return new_name
-        new_name = new_name + "_{}".format(j)
+        new_name = base_name + "_{}".format(j)
     raise Exception("Failed to generated a unique name")
 
 
