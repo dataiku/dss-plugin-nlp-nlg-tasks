@@ -1,0 +1,90 @@
+{
+    "meta": {
+        "label": "API configuration",
+        "description": "Define presets for users to call the API with specific credentials and parallelization parameters",
+        "icon": "icon-magic"
+    },
+    "defaultDefinableAtProjectLevel": true,
+    "defaultDefinableInline": false,
+    "definableInline": false,
+    "params": [
+        {
+            "name": "separator_authentification",
+            "label": "Authentification",
+            "type": "SEPARATOR",
+            "description": "Refer to the documentation: https://beta.openai.com/docs/engines"
+        },
+        {
+            "name": "engine",
+            "label": "GPT Model",
+            "description": "Select the GPT model you want to use",
+            "type": "SELECT",
+            "mandatory": true,
+            "selectChoices": [
+                {
+                    "label": "OpenAI - Davinci",
+                    "value": "davinci"
+                },
+                {
+                    "label": "OpenAI - Curie",
+                    "value": "curie"
+                },
+                {
+                    "label": "OpenAI - Babbage",
+                    "value": "babbage"
+                },
+                {
+                    "label": "OpenAI - Ada",
+                    "value": "ada"
+                }
+            ]
+        },
+        {
+            "name": "api_key",
+            "label": "API Key",
+            "description": "OpenAI API Key as a string",
+            "type": "PASSWORD",
+            "mandatory": true
+        },
+        {
+            "name": "separator_performance",
+            "label": "Parallelization",
+            "type": "SEPARATOR"
+        },
+        {
+            "name": "parallel_workers",
+            "label": "Concurrency",
+            "description": "Number of threads calling the API in parallel (max 100). Increase to speed-up computation.",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue": 4,
+            "minI": 1,
+            "maxI": 100
+        },
+        {
+            "name": "separator_api_quota",
+            "label": "Attempts",
+            "type": "SEPARATOR"
+        },
+        {
+            "name": "max_attempts",
+            "label": "Maximum Attempts",
+            "description": "Maximum number of retry attempts when an API request fails",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue": 3,
+            "minI": 1,
+            "maxI": 20
+        },
+        {
+            "name": "wait_interval",
+            "label": "Waiting Interval",
+            "description": "Seconds to wait between reattempting in case of failure",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue": 5,
+            "minI": 1,
+            "maxI": 60
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "id": "nlp-gpt-tasks",
+    "version": "1.0.0",
+    "meta": {
+        "label": "GPT-3 NLP Tasks",
+        "category": "Natural Language Processing",
+        "description": "Use GPT-3 to complete natural language tasks",
+        "author": "Dataiku (Niklas MUENNIGHOFF)",
+        "icon": "icon-magic",
+        "licenseInfo": "Apache Software License",
+        "supportLevel": "NOT_SUPPORTED",
+        "url": "",
+        "tags": [
+            "API",
+            "Cloud",
+            "NLP"
+        ]
+    }
+}
