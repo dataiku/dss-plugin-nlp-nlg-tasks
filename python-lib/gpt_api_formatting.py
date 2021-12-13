@@ -67,25 +67,25 @@ class GPTAPIFormatter(GenericAPIFormatter):
         output_column: AnyStr = "generation",
         column_prefix: AnyStr = "gpt",
         response_column: AnyStr = "text",
-        output_mode: bool = False,
+        output_only_mode: bool = False,
         error_handling: ErrorHandlingEnum = ErrorHandlingEnum.LOG,
     ):
         super().__init__(input_df, column_prefix, error_handling)
 
-        if output_mode:
+        if output_only_mode:
             self.generated_text_column_name = output_column
         else:
             self.generated_text_column_name = generate_unique(
                 output_column, input_df.columns, prefix=None
             )
-        self.output_mode = output_mode
+        self.output_only_mode = output_only_mode
         self.input_column = input_column
         self.input_df_columns = input_df.columns
         self.response_column = response_column
         self._compute_column_description()
 
     def _compute_column_description(self):
-        if self.output_mode:
+        if self.output_only_mode:
             self.column_description_dict[self.generated_text_column_name] = "Generated text"
         else:
             self.column_description_dict[
