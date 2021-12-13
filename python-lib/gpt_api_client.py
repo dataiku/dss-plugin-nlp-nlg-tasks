@@ -21,6 +21,7 @@ API_EXCEPTIONS = (requests.HTTPError,)
 class GPTClient:
     def __init__(self, engine, api_key) -> None:
         self.engine = engine
+        self.api_key = api_key
         openai.api_key = api_key
 
     def format_prompt(

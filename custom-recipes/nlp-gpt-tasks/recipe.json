@@ -41,7 +41,7 @@
       "mandatory": true
     },
     {
-      "name": "output_mode",
+      "name": "output_only_mode",
       "label": "Output-only mode",
       "description": "Generate text output only without input",
       "type": "BOOLEAN",
@@ -58,7 +58,7 @@
       "allowedColumnTypes": [
         "string"
       ],
-      "visibilityCondition": "model.output_mode==false"
+      "visibilityCondition": "model.output_only_mode==false"
     },
     {
       "name": "input_desc",
@@ -66,7 +66,7 @@
       "description": "Description of input column in singular, e.g. Original Text",
       "type": "STRING",
       "mandatory": false,
-      "visibilityCondition": "model.output_mode==false"
+      "visibilityCondition": "model.output_only_mode==false"
     },
     {
       "name": "output_desc",
@@ -84,7 +84,7 @@
       "defaultValue": {
         "She no went to the market.": "She didn't go to the market."
       },
-      "visibilityCondition": "model.output_mode==false"
+      "visibilityCondition": "model.output_only_mode==false"
     },
     {
       "name": "num_outputs",
@@ -94,7 +94,7 @@
       "defaultValue": 10,
       "minI": 1,
       "mandatory": false,
-      "visibilityCondition": "model.output_mode"
+      "visibilityCondition": "model.output_only_mode"
     },
     {
       "name": "output_examples",
@@ -102,7 +102,7 @@
       "label": "Output examples",
       "description": "1-10 examples of the kind of output to generate",
       "mandatory": false,
-      "visibilityCondition": "model.output_mode"
+      "visibilityCondition": "model.output_only_mode"
     },
     {
       "name": "temperature",

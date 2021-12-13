@@ -4,6 +4,9 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
+import pandas as pd
+from retry import retry
+
 import dataiku
 from dataiku.customrecipe import get_input_names_for_role
 from dataiku.customrecipe import get_output_names_for_role
@@ -14,10 +17,8 @@ from dkulib.parallelizer import DataFrameParallelizer
 from gpt_api_client import API_EXCEPTIONS
 from gpt_api_client import GPTClient
 from gpt_api_formatting import GPTAPIFormatter
-import pandas as pd
 from plugin_io_utils import ErrorHandlingEnum
 from plugin_io_utils import validate_column_input
-from retry import retry
 
 # ==============================================================================
 # SETUP
@@ -29,8 +30,8 @@ api_configuration_preset = recipe_config.get("api_configuration_preset")
 if api_configuration_preset is None or api_configuration_preset == {}:
     raise ValueError("Please specify an API configuration preset")
 
-output_mode = recipe_config.get("output_mode", False)
-if output_mode:
+output_only_mode = recipe_config.get("output_only_mode", False)
+if output_only_mode:
     examples = recipe_config.get("output_examples", "")
     examples = [("", v) for v in examples]
     # Explicity set to empty strings as DSS may cache previous settings
@@ -71,7 +72,7 @@ wait_interval = api_configuration_preset.get("wait_interval")
 # DEFINITIONS
 # ==============================================================================
 
-if output_mode:
+if output_only_mode:
     input_dataset = None
     # Simulate an empty input dataframe if none is specified
     input_df = pd.DataFrame([""] * recipe_config.get("num_outputs"), columns=[output_column_name])
@@ -128,7 +129,7 @@ formatter = GPTAPIFormatter(
     output_column=output_column_name,
     input_column=text_column,
     column_prefix=column_prefix,
-    output_mode=output_mode,
+    output_only_mode=output_only_mode,
     error_handling=error_handling,
 )
 
