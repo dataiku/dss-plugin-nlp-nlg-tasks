@@ -1,8 +1,8 @@
 {
   "meta": {
-    "label": "GPT-3 NLP Tasks",
+    "label": "NLG Tasks",
     "displayOrderRank": 1,
-    "description": "Use GPT-3 to complete natural language tasks",
+    "description": "Use NLG models to complete natural language tasks",
     "icon": "icon-magic"
   },
   "kind": "PYTHON",
