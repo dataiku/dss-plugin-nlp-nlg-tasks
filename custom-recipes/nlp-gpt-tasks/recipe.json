@@ -2,7 +2,7 @@
   "meta": {
     "label": "NLG Tasks",
     "displayOrderRank": 1,
-    "description": "Use NLG models to complete natural language tasks",
+    "description": "Use Natural Language Generation (NLG) models to complete natural language tasks",
     "icon": "icon-magic"
   },
   "kind": "PYTHON",
