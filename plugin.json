@@ -1,10 +1,10 @@
 {
     "id": "nlp-nlg-tasks",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "meta": {
-        "label": "NLG Tasks",
+        "label": "NLG Tasks (Deprecated)",
         "category": "Natural Language Processing",
-        "description": "Use Natural Language Generation (NLG) models to complete natural language tasks",
+        "description": "This plugin is deprecated in favor of the OpenAI GPT Text Completion plugin. Use Natural Language Generation (NLG) models to complete natural language tasks",
         "author": "Dataiku (Niklas MUENNIGHOFF)",
         "icon": "icon-magic",
         "licenseInfo": "Apache Software License",
